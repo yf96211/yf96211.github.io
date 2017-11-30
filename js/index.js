@@ -19,7 +19,7 @@ var Countdown = {
    	};
 
     var myDate = new Date();//获取系统当前时间
-    var mhour = 47-myDate.getHours(); //获取当前小时数(0-23)
+    var mhour = 23-myDate.getHours(); //获取当前小时数(0-23)
     var mmin = 60-myDate.getMinutes(); //获取当前分钟数(0-59)
     var msec = myDate.getSeconds(); //获取当前秒数(0-59)
     // Init countdown values
