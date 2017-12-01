@@ -308,7 +308,7 @@ function reveal() {
 	}
 
 	var ifrm = document.createElement("iframe");
-	ifrm.setAttribute("src", "love.mp4");
+	ifrm.setAttribute("src", "love.MP4");
 	//ifrm.style.width = `${w}px`;
 	//ifrm.style.height = `${h}px`;
 	ifrm.style.border = 'none';
