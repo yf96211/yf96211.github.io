@@ -29,8 +29,8 @@ var Countdown = {
     function toUrl() 
      { 
 	     var dd = new Date();//获取系统当前时间
-	     console.log(dd);
-             if(dd == 2)
+	     console.log(dd.getDate());
+             if(dd.getDate() == 2)
 		  window.location.href="index2.html";   
      } 
     // Init countdown values
