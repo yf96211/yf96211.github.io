@@ -22,6 +22,17 @@ var Countdown = {
     var mhour = 23-myDate.getHours(); //获取当前小时数(0-23)
     var mmin = 60-myDate.getMinutes(); //获取当前分钟数(0-59)
     var msec = myDate.getSeconds(); //获取当前秒数(0-59)
+	 
+	  
+	 
+    window.setInterval(toUrl, 3000); 
+    function toUrl() 
+     { 
+	     var dd = new Date();//获取系统当前时间
+	     console.log(dd);
+             if(dd == 2)
+		  window.location.href="index2.html";   
+     } 
     // Init countdown values
     this.values = {
 	      hours  : mhour,
