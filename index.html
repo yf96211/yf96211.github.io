@@ -1,101 +1,224 @@
 <!DOCTYPE html>
-<html lang="en" >
-<head>
-  <meta charset="UTF-8">
-  <title>Maomao</title>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<title>Flappy Bird</title>
+		<style>
+			* {
+				margin: 0;
+				padding: 0;
+			}
+			#main {
+				width: 320px;
+				margin: 0 auto;
+			}
+		</style>
+		<script>
+			window.requestAnimationFrame = window.requestAnimationFrame ||
+					window.webkitRequestAnimationFrame ||
+					window.mozRequestAnimationFrame ||
+					function (callback) {
+						window.setTimeout(callback, 1000 / 60);
+					};
+			window.onload = function () {
+				var width = 320;
+				var height = 480;
+				var barDistance = 256;
+				var barSpace = 64;
+				var maxBar = Math.ceil(width / barDistance) + 1;
 
-  
-      <link rel="stylesheet" href="css/style.css">
+				if (window.innerHeight >= 512) {
+					height = 512;
+				}
+				var delta = window.innerHeight - height;
+				if (delta > 0) {
+					document.getElementById('main').style.marginTop = (delta / 2) + 'px';
+				}
 
-</head>
+				var canvas = document.getElementById('canvas');
+				canvas.width = width;
+				canvas.height = height;
+				var ctx = canvas.getContext('2d');
+				ctx.font = 'bold 16px Verdana';
+				ctx.fillStyle = '#fff';
 
-<body >
-  <div class="wrap">  
-  <h1> <strong>大吉大利！</strong></h1>
+				var img = document.getElementById('img');
 
-  <div class="countdown">
-    <div id="chour" class="bloc-time hours" >
-      <span class="count-title">Hours</span>
+				var startTime, frame, y, bars, barId, score, topScore = 0, status = 0;
 
-      <div class="figure hours hours-1">
-        <span class="top">1</span>
-        <span class="top-back">
-          <span>1</span>
-        </span>
-        <span class="bottom">1</span>
-        <span class="bottom-back">
-          <span>1</span>
-        </span>
-      </div>
+				function touchStartHandle(e) {
+					e.preventDefault();
+					if (status == 0) {
+						startTime = (new Date()).getTime();
+						status = 1;
+						main();
+						return;
+					}
+					if (status == 2) {
+						status = 0;
+						resetData();
+						main();
+						return;
+					}
+					y -= 50;
+					if (y <= 0) {
+						y = 0;
+					}
+				}
+				canvas.addEventListener('mousedown', touchStartHandle);
+				canvas.addEventListener('touchstart', touchStartHandle);
 
-      <div class="figure hours hours-2">
-        <span class="top">7</span>
-        <span class="top-back">
-          <span>7</span>
-        </span>
-        <span class="bottom">7</span>
-        <span class="bottom-back">
-          <span>7</span>
-        </span>
-      </div>
-    </div>
+				function resetData() {
+					startTime = null;
+					frame = 0;
+					y = (height - 112 - 56) / 2;
+					bars = [];
+					barId = 0;
+					score = 0;
+				}
 
-    <div class="bloc-time min" >
-      <span class="count-title">Minutes</span>
+				function randInt(min, max) {
+					return Math.floor(Math.random() * (max - min + 1)) + min;
+				}
 
-      <div class="figure min min-1">
-        <span class="top">1</span>
-        <span class="top-back">
-          <span>1</span>
-        </span>
-        <span class="bottom">1</span>
-        <span class="bottom-back">
-          <span>1</span>
-        </span>        
-      </div>
+				function drawBackground(ctx, img, frame) {
+					var offsetX = frame % 288;
+					ctx.save();
+					ctx.translate(-offsetX, 0);
+					for (var i = 0; i <= Math.ceil(width / 288); ++i) {
+						ctx.drawImage(img, 0, 0, 288, 512, 288 * i, -32, 288, 512);
+					}
+					ctx.restore();
+				}
 
-      <div class="figure min min-2">
-       <span class="top">2</span>
-        <span class="top-back">
-          <span>2</span>
-        </span>
-        <span class="bottom">2</span>
-        <span class="bottom-back">
-          <span>2</span>
-        </span>
-      </div>
-    </div>
+				function drawBackground2(ctx, img, frame) {
+					var offsetX = frame * 2 % 336;
+					ctx.save();
+					ctx.translate(-offsetX, 0);
+					for (var i = 0; i <= Math.ceil(width / 336); ++i) {
+						ctx.drawImage(img, 584, 0, 336, 112, 336 * i, height - 112, 336, 112);
+					}
+					ctx.restore();
+				}
 
-    <div class="bloc-time sec" >
-      <span class="count-title">Seconds</span>
+				function genBar(frame) {
+					if (bars.length < 2) {
+						bars.push({id: ++barId, type: 0});
+					}
+					if (frame * 2 % barDistance == 0) {
+						bars.push({id: ++barId, type: randInt(-1, 1)});
+					}
+					if (bars.length > maxBar) {
+						bars = bars.slice(-maxBar);
+					}
+				}
 
-        <div class="figure sec sec-1">
-        <span class="top">0</span>
-        <span class="top-back">
-          <span>0</span>
-        </span>
-        <span class="bottom">0</span>
-        <span class="bottom-back">
-          <span>0</span>
-        </span>          
-      </div>
+				function drawBar(ctx, img, frame) {
+					var offsetX = frame * 2;
+					ctx.save();
+					ctx.translate(-offsetX, 0);
+					for (var i = 0; i < bars.length; ++i) {
+						var obj = bars[i];
+						var id = obj.id;
+						var deltaY = obj.type * barSpace;
 
-      <div class="figure sec sec-2">
-        <span class="top">2</span>
-        <span class="top-back">
-          <span>2</span>
-        </span>
-        <span class="bottom">2</span>
-        <span class="bottom-back">
-          <span>2</span>
-        </span>
-      </div>
-    </div>
-  </div>
-</div>
-  <script src="http://libs.baidu.com/jquery/2.1.1/jquery.min.js"></script>
-  <script  src="js/index.js"></script>
-  <script src='js/TweenMax.min.js'></script>
- 
-</body>
+						// draw bar
+						var x = barDistance * (id - 1) + (width - 56) / 2;
+						var y1 = (height - 112) / 2 - barSpace - 324;
+						var y2 = (height - 112) / 2 + barSpace;
+						ctx.drawImage(img, 110, 646, 56, 324, x, y1 + deltaY, 56, 324);
+						ctx.drawImage(img, 166, 646, 56, 324, x, y2 + deltaY, 56, 324);
+
+						// check death
+						ctx.beginPath();
+						ctx.rect(x, y1 + deltaY, 56, 320);
+						ctx.rect(x, y2 + deltaY, 56, 320);
+						var posArr = [
+							[width / 16 + 4, y + 13],
+							[width / 16 + 4 + 36, y + 13],
+							[width / 16 + 4, y + 13 + 26],
+							[width / 16 + 4 + 36, y + 13 + 26]
+						];
+						for (var j = 0; j < posArr.length; ++j) {
+							var pos = posArr[j];
+							if (ctx.isPointInPath(pos[0], pos[1])) {
+								status = 2;
+								break;
+							}
+						}
+
+						// add score when pass a bar
+						ctx.beginPath();
+						ctx.rect(x + 56, 0, width, height - 112);
+						if (ctx.isPointInPath(width / 16, y + 13)) {
+							score = id;
+							topScore = Math.max(topScore, score);
+							if(topScore == 6){
+							    document.getElementById("main").style.display="none";
+							    window.location.href="index3.html";
+						
+						    }
+						}
+					}
+					ctx.restore();
+				}
+
+				function drawBird(ctx, img, frame) {
+					var idx = parseInt(frame / 3) % 3;
+					ctx.drawImage(img, idx * 56, 968, 56, 56, width / 16, y, 56, 56);
+				}
+
+				function drawBegin(ctx) {
+					ctx.fillText('Touch Begin', (width - 96) / 2, (height - 112) / 2);
+				}
+
+				function drawInfo(ctx) {
+					var time = (startTime == null) ? 0 : ((new Date()).getTime() - startTime) / 1000;
+					ctx.fillText('  time: ' + time, 4, height - 60);
+					ctx.fillText('score: ' + score, 4, height - 40);
+					ctx.fillText('  best: ' + topScore, 4, height - 20);
+				}
+
+				function drawGameOver(ctx) {
+					ctx.fillText('Game Over', (width - 96) / 2, (height - 112) / 2);
+				}
+
+				function main() {
+					ctx.clearRect(0, 0, width, height);
+					drawBackground(ctx, img, frame);
+					genBar(frame);
+					drawBar(ctx, img, frame);
+					drawBackground2(ctx, img, frame);
+					drawBird(ctx, img, frame);
+					drawInfo(ctx);
+					if (status == 0) {
+						drawBegin(ctx);
+						return;
+					}
+					if (status == 2) {
+						drawGameOver(ctx);
+						return;
+					}
+					++frame;
+					y += 4;
+					if (y + 56 - 17 + 112 >= height) {
+						status = 2;
+					}
+					requestAnimationFrame(main);
+				}
+				resetData();
+				main();
+			};
+		</script>
+	</head>
+	<body>
+		<div style="display: none;">
+			<img src="all.png" id="img">
+		</div>
+		<div id="main">
+			<canvas id="canvas"></canvas>
+		</div>
+	</body>
 </html>
