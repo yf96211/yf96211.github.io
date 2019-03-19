@@ -52,10 +52,12 @@
 </body>
 <script>
     var img_src = "dist/hh2.jpg";
+    var img_src2 = "dist/hh3.jpg";
     (function() {
         $(function() {
             $('.font-img').click(function() {
                 $('.kz-photo').addClass('back-face');
+                $(".font-img").attr('src',img_src2);
                 $("body").css("background","url("+img_src+")")
             });
         });
